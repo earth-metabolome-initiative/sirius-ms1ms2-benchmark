@@ -422,7 +422,7 @@ def main() -> None:
 
     ionization_dirs: dict[str, Path] = {
         "positive": args.positive_dir,
-        #"negative": args.negative_dir,
+        "negative": args.negative_dir,
     }
 
     all_stats: list[dict[str, object]] = []
