@@ -21,7 +21,7 @@ import argparse
 import gzip
 import sys
 from pathlib import Path
-from typing import Literal
+import uuid
 
 import pandas as pd
 
@@ -97,6 +97,10 @@ def collect_mode_data(
         df = df.copy()
         df["sample"] = sample_dir.name
         df["ionization"] = ionization_dir.name
+
+        # we generate a uuid per feature_id
+        feature_to_uuid = {fid: str(uuid.uuid4()) for fid in df["feature_id"].unique()}
+        df["uuid"] = df["feature_id"].map(feature_to_uuid)
         frames.append(df)
 
     if not frames:
@@ -149,7 +153,7 @@ def compute_stats(df: pd.DataFrame, label: str) -> dict[str, object]:
 
     # --- Candidates per spectrum ---
     if "feature_id" in df.columns:
-        cands_per_spectrum = df.groupby(by=["feature_id", "sample"]).size()
+        cands_per_spectrum = df.groupby("uuid").size()
         stats["avg_candidates_per_spectrum"] = round(cands_per_spectrum.mean(), 2)
         stats["median_candidates_per_spectrum"] = round(cands_per_spectrum.median(), 2)
         stats["max_candidates_per_spectrum"] = int(cands_per_spectrum.max())
