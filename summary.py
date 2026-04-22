@@ -149,7 +149,7 @@ def compute_stats(df: pd.DataFrame, label: str) -> dict[str, object]:
 
     # --- Candidates per spectrum ---
     if "feature_id" in df.columns:
-        cands_per_spectrum = df.groupby("feature_id").size()
+        cands_per_spectrum = df.groupby(by=["feature_id", "sample"]).size()
         stats["avg_candidates_per_spectrum"] = round(cands_per_spectrum.mean(), 2)
         stats["median_candidates_per_spectrum"] = round(cands_per_spectrum.median(), 2)
         stats["max_candidates_per_spectrum"] = int(cands_per_spectrum.max())
