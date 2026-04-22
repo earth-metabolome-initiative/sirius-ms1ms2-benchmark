@@ -1043,12 +1043,14 @@ source = { editable = "." }
 dependencies = [
     { name = "environments-utils" },
     { name = "metabolite-annotator" },
+    { name = "pandas" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "environments-utils", specifier = ">=1.0.15" },
     { name = "metabolite-annotator", git = "https://github.com/earth-metabolome-initiative/metabolite-annotator" },
+    { name = "pandas", specifier = ">=2.3.3" },
 ]
 
 [[package]]
