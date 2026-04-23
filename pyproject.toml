@@ -6,9 +6,11 @@ readme = "README.md"
 authors = [{ name = "Marco Visani", email = "marco.visani@unifr.ch" }]
 requires-python = ">=3.13"
 dependencies = [
+    "dictances>=1.5.3",
     "environments-utils>=1.0.15",
     "metabolite-annotator",
     "pandas>=2.3.3",
+    "tqdm>=4.67.3",
 ]
 
 [build-system]
@@ -17,3 +19,8 @@ build-backend = "uv_build"
 
 [tool.uv.sources]
 metabolite-annotator = { git = "https://github.com/earth-metabolome-initiative/metabolite-annotator" }
+
+[dependency-groups]
+dev = [
+    "jupyterlab>=4.5.6",
+]

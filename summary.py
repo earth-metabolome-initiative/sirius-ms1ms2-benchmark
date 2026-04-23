@@ -150,7 +150,6 @@ def compute_stats(df: pd.DataFrame, label: str) -> dict[str, object]:
     )
     stats["n_annotated_spectra"] = annotated_spectra
 
-
     # --- Candidates per spectrum ---
     if "feature_id" in df.columns:
         cands_per_spectrum = df.groupby("uuid").size()
@@ -163,15 +162,23 @@ def compute_stats(df: pd.DataFrame, label: str) -> dict[str, object]:
     if "csiScore" in df.columns:
         scores = df["csiScore"].dropna()
         stats["avg_csiScore_all"] = round(scores.mean(), 4) if not scores.empty else "—"
-        stats["median_csiScore_all"] = round(scores.median(), 4) if not scores.empty else "—"
+        stats["median_csiScore_all"] = (
+            round(scores.median(), 4) if not scores.empty else "—"
+        )
         stats["std_csiScore_all"] = round(scores.std(), 4) if not scores.empty else "—"
 
     # --- csiScore (top-1 only) ---
     if "csiScore" in top1.columns:
         scores_top1 = top1["csiScore"].dropna()
-        stats["avg_csiScore_top1"] = round(scores_top1.mean(), 4) if not scores_top1.empty else "—"
-        stats["median_csiScore_top1"] = round(scores_top1.median(), 4) if not scores_top1.empty else "—"
-        stats["std_csiScore_top1"] = round(scores_top1.std(), 4) if not scores_top1.empty else "—"
+        stats["avg_csiScore_top1"] = (
+            round(scores_top1.mean(), 4) if not scores_top1.empty else "—"
+        )
+        stats["median_csiScore_top1"] = (
+            round(scores_top1.median(), 4) if not scores_top1.empty else "—"
+        )
+        stats["std_csiScore_top1"] = (
+            round(scores_top1.std(), 4) if not scores_top1.empty else "—"
+        )
 
     # --- Tanimoto similarity (top-1) ---
     if "tanimotoSimilarity" in top1.columns:
@@ -187,8 +194,12 @@ def compute_stats(df: pd.DataFrame, label: str) -> dict[str, object]:
     # --- MCES distance to top hit (top-1) ---
     if "mcesDistToTopHit" in top1.columns:
         mces = top1["mcesDistToTopHit"].dropna()
-        stats["avg_mcesDistToTopHit_top1"] = round(mces.mean(), 4) if not mces.empty else "—"
-        stats["median_mcesDistToTopHit_top1"] = round(mces.median(), 4) if not mces.empty else "—"
+        stats["avg_mcesDistToTopHit_top1"] = (
+            round(mces.mean(), 4) if not mces.empty else "—"
+        )
+        stats["median_mcesDistToTopHit_top1"] = (
+            round(mces.median(), 4) if not mces.empty else "—"
+        )
 
     # --- xlogP (top-1) ---
     if "xlogP" in top1.columns:
@@ -201,7 +212,9 @@ def compute_stats(df: pd.DataFrame, label: str) -> dict[str, object]:
     if "inchiKey" in top1.columns:
         stats["n_unique_inchikeys_top1"] = int(top1["inchiKey"].dropna().nunique())
     if "molecularFormula" in top1.columns:
-        stats["n_unique_formulas_top1"] = int(top1["molecularFormula"].dropna().nunique())
+        stats["n_unique_formulas_top1"] = int(
+            top1["molecularFormula"].dropna().nunique()
+        )
     if "smiles" in top1.columns:
         stats["n_unique_smiles_top1"] = int(top1["smiles"].dropna().nunique())
 
@@ -209,7 +222,9 @@ def compute_stats(df: pd.DataFrame, label: str) -> dict[str, object]:
     if "adduct" in top1.columns:
         stats["n_unique_adducts"] = int(top1["adduct"].dropna().nunique())
         most_common_adduct = top1["adduct"].dropna().mode()
-        stats["most_common_adduct"] = most_common_adduct.iloc[0] if not most_common_adduct.empty else "—"
+        stats["most_common_adduct"] = (
+            most_common_adduct.iloc[0] if not most_common_adduct.empty else "—"
+        )
 
     # --- NPC classifications (top-1, unique spectra) ---
     for npc_col in ("npc_pathway", "npc_superclass", "npc_class"):

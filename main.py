@@ -5,10 +5,12 @@ Process EMI archives: extract mzML files, run MZMine, then run Sirius
 Pipeline per mzML:
   1. Extract mzML from archive  →  output/<stem>/<stem>.mzML
   2. Run MZMine                 →  output/<stem>/<stem>_sirius.mgf
-  3. Run Sirius (normal)        →  output/<stem>/sirius_normal/   + results.csv
-  4. Run Sirius (ms2_only)      →  output/<stem>/sirius_ms2_only/ + results.csv
-"""
+  3. Run Sirius (normal)        →  output/<stem>/sirius_normal/   + annotation_results.csv.gz
+  4. Run Sirius (ms2_only)      →  output/<stem>/sirius_ms2_only/ + annotation_results.csv.gz
 
+Steps 2-4 are skipped individually when their output already exists on disk,
+making the script safe to re-run after partial failures.
+"""
 
 import subprocess
 import sys
@@ -31,8 +33,8 @@ OUTPUT_ROOT: Path = Path("output")
 SIRIUS_NORMAL_DIR: str = "sirius_normal"
 SIRIUS_MS2_ONLY_DIR: str = "sirius_ms2_only"
 
-# CSV result filename produced inside each Sirius output directory
-SIRIUS_RESULTS_CSV: str = "results.csv"
+# Result filename produced inside each Sirius output directory
+SIRIUS_RESULTS_FILE: str = "annotation_results.csv.gz"
 
 
 # ---------------------------------------------------------------------------
@@ -138,9 +140,12 @@ def run_mzmine(
     """Run MZMine on *mzml_file*, writing results into *output_dir*."""
     cmd: list[str] = [
         str(mzmine_exe),
-        "-i", str(mzml_file),
-        "-o", str(output_dir),
-        "-b", str(batch_file),
+        "-i",
+        str(mzml_file),
+        "-o",
+        str(output_dir),
+        "-b",
+        str(batch_file),
     ]
     print(f"  Running MZMine: {' '.join(cmd)}")
     subprocess.run(cmd, check=True)
@@ -179,7 +184,7 @@ def run_sirius(
     ion_mode:
         Ionization mode (``pos`` or ``neg``).
     ms2_only:
-        When *True*, pass ``--ms2_only`` to the sirius subcommand.
+        When *True*, pass ``--ms2-only`` to the sirius subcommand.
 
     Returns
     -------
@@ -191,9 +196,12 @@ def run_sirius(
     cmd: list[str] = [
         "uvx",
         "metabolite-annotator",
-        "-i", str(mgf_file),
-        "-o", str(output_dir),
-        "--ion-mode", ion_mode.value,
+        "-i",
+        str(mgf_file),
+        "-o",
+        str(output_dir),
+        "--ion-mode",
+        ion_mode.value,
         "sirius",
     ]
     if ms2_only:
@@ -204,6 +212,19 @@ def run_sirius(
     subprocess.run(cmd, check=True)
     return output_dir
 
+
+# ---------------------------------------------------------------------------
+# Skip-if-exists helpers
+# ---------------------------------------------------------------------------
+
+
+def sirius_results_exist(sirius_dir: Path) -> bool:
+    """
+    Return True when *sirius_dir* already contains a completed
+    ``annotation_results.csv.gz`` file, meaning this Sirius mode can be
+    skipped entirely on a re-run.
+    """
+    return (sirius_dir / SIRIUS_RESULTS_FILE).is_file()
 
 
 # ---------------------------------------------------------------------------
@@ -220,18 +241,39 @@ def process_mzml(
     """
     Full pipeline for a single mzML file:
       MZMine → MGF → Sirius (normal) → Sirius (ms2_only)
+
+    Each step is skipped when its output already exists on disk, making the
+    script idempotent and safe to resume after a partial failure.
     """
     sample_dir: Path = mzml_file.parent
 
-    # --- MZMine ---
-    run_mzmine(
-        mzmine_exe=mzmine_exe,
-        mzml_file=mzml_file,
-        output_dir=sample_dir,
-        batch_file=batch_file,
-    )
+    normal_dir: Path = sample_dir / SIRIUS_NORMAL_DIR
+    ms2_only_dir: Path = sample_dir / SIRIUS_MS2_ONLY_DIR
 
+    normal_done: bool = sirius_results_exist(normal_dir)
+    ms2_only_done: bool = sirius_results_exist(ms2_only_dir)
+
+    # If both Sirius modes are already complete, nothing left to do for this
+    # sample — skip even the MGF / MZMine check entirely.
+    if normal_done and ms2_only_done:
+        print(
+            f"  SKIP {mzml_file.stem}: both annotation_results.csv.gz files "
+            f"already exist in {sample_dir}"
+        )
+        return
+
+    # --- MZMine (only when at least one Sirius mode still needs to run) ---
     mgf_file: Path = expected_mgf(mzml_file)
+    if mgf_file.exists():
+        print(f"  SKIP MZMine: MGF already exists at {mgf_file}")
+    else:
+        run_mzmine(
+            mzmine_exe=mzmine_exe,
+            mzml_file=mzml_file,
+            output_dir=sample_dir,
+            batch_file=batch_file,
+        )
+
     if not mgf_file.exists():
         print(
             f"  WARNING: Expected MGF not found at {mgf_file}; skipping Sirius.",
@@ -240,12 +282,20 @@ def process_mzml(
         return
 
     # --- Sirius: normal run ---
-    normal_dir: Path = sample_dir / SIRIUS_NORMAL_DIR
-    run_sirius(mgf_file, normal_dir, ion_mode, ms2_only=False)
+    if normal_done:
+        print(
+            f"  SKIP Sirius (normal): {normal_dir / SIRIUS_RESULTS_FILE} already exists"
+        )
+    else:
+        run_sirius(mgf_file, normal_dir, ion_mode, ms2_only=False)
 
     # --- Sirius: ms2_only run ---
-    ms2_only_dir: Path = sample_dir / SIRIUS_MS2_ONLY_DIR
-    run_sirius(mgf_file, ms2_only_dir, ion_mode, ms2_only=True)
+    if ms2_only_done:
+        print(
+            f"  SKIP Sirius (ms2_only): {ms2_only_dir / SIRIUS_RESULTS_FILE} already exists"
+        )
+    else:
+        run_sirius(mgf_file, ms2_only_dir, ion_mode, ms2_only=True)
 
 
 def process_archive(
@@ -273,6 +323,7 @@ def process_archive(
             batch_file=batch_file,
             ion_mode=ion_mode,
         )
+        mzml_file.unlink()
 
 
 # ---------------------------------------------------------------------------
