@@ -8,17 +8,17 @@ Statistics are computed across **all samples** in each ionization directory.
 
 | Metric | Positive — normal | Positive — ms2 only |
 | :--- | :---: | :---: |
-| Number of samples | 9 | 9 |
-| Annotated spectra | 2523 | 2543 |
-| Avg spectra per sample | 492.3 | 496.3 |
-| Std spectra per sample | 146.6 | 145.6 |
+| Number of samples | 17 | 16 |
+| Annotated spectra | 7876 | 6588 |
+| Avg spectra per sample | 768.7 | 688.1 |
+| Std spectra per sample | 722.6 | 650.6 |
 
 ## Candidates per spectrum
 
 | Metric | Positive — normal | Positive — ms2 only |
 | :--- | :---: | :---: |
-| Avg candidates / spectrum | 264.13 | 229.57 |
-| Median candidates / spectrum | 42.0 | 38.0 |
+| Avg candidates / spectrum | 241.11 | 212.84 |
+| Median candidates / spectrum | 34.0 | 32.0 |
 | Max candidates / spectrum | 23207 | 23116 |
 | Min candidates / spectrum | 1 | 1 |
 
@@ -26,20 +26,20 @@ Statistics are computed across **all samples** in each ionization directory.
 
 | Metric | Positive — normal | Positive — ms2 only |
 | :--- | :---: | :---: |
-| Avg CSI:FingerID score (rank 1) | -157.5561 | -160.8224 |
-| Median CSI:FingerID score (rank 1) | -118.7567 | -122.9013 |
-| Std CSI:FingerID score (rank 1) | 134.6065 | 136.9696 |
-| Avg CSI:FingerID score (all ranks) | -345.0597 | -369.4717 |
-| Median CSI:FingerID score (all ranks) | -335.1505 | -360.6245 |
-| Std CSI:FingerID score (all ranks) | 145.3303 | 150.6569 |
+| Avg CSI:FingerID score (rank 1) | -182.8839 | -184.3498 |
+| Median CSI:FingerID score (rank 1) | -137.3431 | -139.6768 |
+| Std CSI:FingerID score (rank 1) | 164.5308 | 164.0699 |
+| Avg CSI:FingerID score (all ranks) | -355.9952 | -378.5434 |
+| Median CSI:FingerID score (all ranks) | -345.3782 | -368.7625 |
+| Std CSI:FingerID score (all ranks) | 148.7143 | 153.5529 |
 
 ## Structural similarity
 
 | Metric | Positive — normal | Positive — ms2 only |
 | :--- | :---: | :---: |
-| Avg Tanimoto similarity (rank 1) | 0.5923 | 0.5748 |
-| Median Tanimoto similarity (rank 1) | 0.5776 | 0.5487 |
-| % hits with Tanimoto ≥ 0.5 | 60.6 | 56.9 |
+| Avg Tanimoto similarity (rank 1) | 0.5756 | 0.5634 |
+| Median Tanimoto similarity (rank 1) | 0.5596 | 0.542 |
+| % hits with Tanimoto ≥ 0.5 | 58.6 | 56.0 |
 | Avg MCES dist to top hit (rank 1) | 0.0 | 0.0 |
 | Median MCES dist to top hit (rank 1) | 0.0 | 0.0 |
 
@@ -47,17 +47,17 @@ Statistics are computed across **all samples** in each ionization directory.
 
 | Metric | Positive — normal | Positive — ms2 only |
 | :--- | :---: | :---: |
-| Avg xlogP (rank 1) | 1.82 | 1.8 |
-| Median xlogP (rank 1) | 1.39 | 1.4 |
-| Std xlogP (rank 1) | 3.5 | 3.5 |
+| Avg xlogP (rank 1) | 2.34 | 2.34 |
+| Median xlogP (rank 1) | 1.79 | 1.85 |
+| Std xlogP (rank 1) | 4.01 | 3.95 |
 
 ## Chemical diversity
 
 | Metric | Positive — normal | Positive — ms2 only |
 | :--- | :---: | :---: |
-| Unique InChIKeys (rank 1) | 2154 | 2197 |
-| Unique molecular formulas (rank 1) | 1520 | 1593 |
-| Unique SMILES (rank 1) | 2154 | 2197 |
+| Unique InChIKeys (rank 1) | 6237 | 5275 |
+| Unique molecular formulas (rank 1) | 4328 | 3722 |
+| Unique SMILES (rank 1) | 6237 | 5275 |
 | Unique adducts | 9 | 6 |
 | Most common adduct | [M + H]+ | [M + H]+ |
 
@@ -65,12 +65,12 @@ Statistics are computed across **all samples** in each ionization directory.
 
 | Metric | Positive — normal | Positive — ms2 only |
 | :--- | :---: | :---: |
-| Spectra with NPC pathway | 4431 | 4467 |
+| Spectra with NPC pathway | 13068 | 11009 |
 | Unique NPC pathways | 7 | 7 |
-| Most frequent NPC pathway | Shikimates and Phenylpropanoids | Shikimates and Phenylpropanoids |
-| Spectra with NPC superclass | 4431 | 4467 |
-| Unique NPC superclasses | 55 | 56 |
-| Most frequent NPC superclass | Phenylpropanoids (C6-C3) | Fatty amides |
-| Spectra with NPC class | 4431 | 4467 |
-| Unique NPC classes | 232 | 233 |
+| Most frequent NPC pathway | Fatty acids | Fatty acids |
+| Spectra with NPC superclass | 13068 | 11009 |
+| Unique NPC superclasses | 60 | 61 |
+| Most frequent NPC superclass | Fatty amides | Fatty amides |
+| Spectra with NPC class | 13068 | 11009 |
+| Unique NPC classes | 300 | 294 |
 | Most frequent NPC class | Cinnamic acids and derivatives | Cinnamic acids and derivatives |
